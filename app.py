@@ -3,14 +3,14 @@ import uvicorn
 import urllib3
 from bs4 import BeautifulSoup
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 http = urllib3.PoolManager()
 url = "https://www.movie-map.com/"
-# movie_input  = input(" write movie name : ")
 
 
 def find_similar_movies(movie_name : str):
-    movie_query = url + movie_name.replace(' ',"+") 
-    resp = http.request('GET', movie_query)
+    # movie_query = url + movie_name.replace(' ',"+") 
+    resp = http.request('GET', movie_name)
     data = resp.data
     reponse_html = BeautifulSoup(data, 'html.parser')
     list_movie  = [] 
