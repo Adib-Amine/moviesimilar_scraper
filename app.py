@@ -3,16 +3,17 @@ import uvicorn
 import urllib3
 from bs4 import BeautifulSoup
 import urllib.parse
-
+from fastapi.middleware.cors import CORSMiddleware
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
 http = urllib3.PoolManager()
 url = "https://www.movie-map.com/"
 
 
 def find_similar_movies(movie_name : str):
-    # movie_query = url + movie_name.replace(' ',"+")
     movie_decode =  urllib.parse.unquote(movie_name)
-    movie_query = url + movie_decode.replace(" ","+") 
+    movie_query = url + urllib.parse.quote_plus(movie_decode)
     resp = http.request('GET', movie_query)
     data = resp.data
     reponse_html = BeautifulSoup(data, 'html.parser')
@@ -23,6 +24,14 @@ def find_similar_movies(movie_name : str):
     
 
 app = FastAPI(debug=True)
+#middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
 
 @app.get('/{movie_name}')
 async def get_similar_movies(movie_name : str):
